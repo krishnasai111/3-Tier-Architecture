@@ -13,14 +13,18 @@ spec:
     metadata:
       labels:
         service: catalogue
+      annotations:
+        {{- with .Values.catalogue.annotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
     spec:
       {{ if .Values.psp.enabled }}
       serviceAccountName: robot-shop
       {{ end }}
       containers:
       - name: catalogue
-        image: {{ .Values.image.repo }}/rs-catalogue:{{ .Values.image.version }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: krishnasai111/catalogue:metrics3
+        imagePullPolicy: IfNotPresent
         env:
           - name: INSTANA_AGENT_HOST
             valueFrom:
