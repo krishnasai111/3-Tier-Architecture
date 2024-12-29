@@ -19,8 +19,8 @@ spec:
       {{ end }}
       containers:
       - name: user
-        image: {{ .Values.image.repo }}/rs-user:{{ .Values.image.version }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        image: krishnasai111/user:metrics
+        imagePullPolicy: IfNotPresent
         env:
           # agent networking access
           - name: INSTANA_AGENT_HOST
@@ -36,6 +36,20 @@ spec:
           requests:
             cpu: 100m
             memory: 50Mi
+        # Prometheus scraping annotations already handled in values.yaml
+        # Ensure that Prometheus can scrape the metrics from /metrics endpoint on port 8080
+        readinessProbe:
+          httpGet:
+            path: /metrics
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 30
       restartPolicy: Always
       {{- with .Values.user.affinity }}
       affinity:
